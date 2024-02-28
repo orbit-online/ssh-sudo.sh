@@ -22,7 +22,7 @@ Run a command as `$SSH_USER` on the remote.
 
 ### `ssh_sudo_cmd CMD...`
 
-Run a command as `$SSH_USER` on the remote but do not preserve the tty stdin
+Run a command as root on the remote but do not preserve the tty stdin
 (quicker).
 
 ## Environment variables
