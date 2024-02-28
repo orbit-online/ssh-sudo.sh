@@ -1,6 +1,3 @@
 {
-  "assets": ["ssh-sudo.sh"],
-  "dependencies": {
-    "orbit-online/checkdeps": "v1.0.2"
-  }
+  "assets": ["ssh-sudo.sh"]
 }
