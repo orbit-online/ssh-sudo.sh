@@ -22,12 +22,16 @@ The third is owned and only readable by `$SSH_SUDO_USER`. It contains
 the commands that are passed to `ssh_sudo`.
 All 3 files are deleted after the commands have completed.
 
-Throughout this entire process, the sudo password is only ever transmitted
-to the remote (and any child process) via stdin piping, meaning it will not
-be visible in the processlist as an argument at any point in time and is _never_
-saved to disk.
+## Security
 
-### Performance
+The sudo password is only ever transmitted to the remote (and any child process)
+via stdin piping, meaning it will not be visible in the processlist as an
+argument at any point in time and is _never_ saved to disk.
+
+None of the [variables](#variables) need to be exported, meaning none of the
+childprocesses your script runs will be able to see the sudo password.
+
+## Performance
 
 Performance can be increased considerably by using an SSH control master:
 
@@ -61,7 +65,7 @@ Run a command as `$SSH_USER` on the remote.
 Run a command as root on the remote but do not preserve stdin
 (quicker).
 
-## Environment variables
+## Variables
 
 These variables do not need to be exported, you can define them in your script
 as global variables and then use the above functions.
