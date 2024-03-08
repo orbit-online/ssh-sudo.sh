@@ -17,7 +17,8 @@ ssh_sudo() {
   SSH_SUDO_PASS="$SSH_SUDO_PASS
 $*" ssh_sudo_cmd tee "$scriptpath" >/dev/null || return $?
   ssh_cmd tee "$askpath" <<<"#!/usr/bin/env sh
-echo $SSH_SUDO_PASS" >/dev/null || return $?
+echo $SSH_SUDO_PASS
+rm -f \"$askpath\"" >/dev/null || return $?
   ssh_cmd SUDO_ASKPASS="$askpath" sudo -Au "${SSH_SUDO_USER:-root}" "$scriptpath" || ret=$?
   ssh_cmd rm -f "$askpath" || true
   ssh_sudo_cmd rm -f "$scriptpath" || true

@@ -13,11 +13,12 @@ upkg install -g orbit-online/ssh-sudo.sh@<VERSION>
 ## How it works
 
 `ssh_sudo` works by creating two temporary files on the remote.
-One (call it "askpass") as `$SSH_USER` which echoes the sudo password
-(only readable and executable by `$SSH_USER`) and another that contains the
-arguments to `ssh_sudo` (call it "script").
-It then executes "script" with `SUDO_ASKPASS=askpassPath sudo -A scriptPath`.  
-The two files are deleted after the script has completed.
+The first (`askpass`) is owned and only readable by `$SSH_USER`. `askpass`
+echoes the sudo password and deletes itself immediately afterwards.
+The second contains the arguments to `ssh_sudo` (`script`).  
+`ssh_sudo` then executes `script` with
+`SUDO_ASKPASS="$askpassPath" sudo -A "$scriptPath"`.  
+`scriptPath` is deleted after the script has completed.
 
 ## Functions
 
