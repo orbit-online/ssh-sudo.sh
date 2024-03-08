@@ -12,13 +12,38 @@ upkg install -g orbit-online/ssh-sudo.sh@<VERSION>
 
 ## How it works
 
-`ssh_sudo` works by creating two temporary files on the remote.
-The first (`askpass`) is owned and only readable by `$SSH_USER`. `askpass`
-echoes the sudo password and deletes itself immediately afterwards.
-The second contains the arguments to `ssh_sudo` (`script`).  
-`ssh_sudo` then executes `script` with
-`SUDO_ASKPASS="$askpassPath" sudo -A "$scriptPath"`.  
-`scriptPath` is deleted after the script has completed.
+`ssh_sudo` works by creating 3 temporary files on the remote.
+The first 2 are owned and only readable by `$SSH_USER`:
+
+- A fifo (named pipe) that outputs the sudo password
+- A sudo `askpass` script that reads from the fifo and outputs to stdout
+
+The third is owned and only readable by `$SSH_SUDO_USER`. It contains
+the commands that are passed to `ssh_sudo`.
+All 3 files are deleted after the commands have completed.
+
+Throughout this entire process, the sudo password is only ever transmitted
+to the remote (and any child process) via stdin piping, meaning it will not
+be visible in the processlist as an argument at any point in time and is _never_
+saved to disk.
+
+### Performance
+
+Performance can be increased considerably by using an SSH control master:
+
+```
+SSH_OPTS=(
+  -o ControlMaster=auto
+  -o ControlPath="$HOME/.ssh/control/myscript-%r@%h:%p"
+  -o ControlPersist=120s
+  -o ConnectTimeout=10s
+)
+```
+
+Do note that the control master decides the SSH options. Meaning if the SSH
+connection is started without `-t`, any subsequent connections of the same
+control master will not have a pseudo-terminal allocation even if `-t` is used.  
+In that case a connection on a separate `ControlPath` must be established.
 
 ## Functions
 
@@ -43,20 +68,20 @@ as global variables and then use the above functions.
 
 ### `$SSH_USER`
 
-Remote SSH user _required_
+Remote SSH user (_required_)
 
 ### `$SSH_HOST`
 
-Remote SSH host _required_
+Remote SSH host (_required_)
 
 ### `$SSH_SUDO_PASS`
 
-sudo password for `$SSH_USER` _required_
+sudo password for `$SSH_USER` (_required_)
 
 ### `$SSH_SUDO_USER`
 
-Remote user to sudo to, defaults to `root` _optional_
+Remote user to sudo to, defaults to `root` (_optional_)
 
 ### `$SSH_OPTS`
 
-Options to pass to all ssh invocations _optional_
+An array of options to pass to all ssh invocations (_optional_)
