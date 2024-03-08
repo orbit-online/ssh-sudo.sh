@@ -5,7 +5,7 @@ ssh_cmd() {
 }
 
 ssh_sudo_cmd() {
-  ssh_cmd sudo -Ski --prompt= "$@" <<<"${SSH_SUDO_PASS:?}"
+  ssh_cmd sudo -Sk --prompt= "$@" <<<"${SSH_SUDO_PASS:?}"
 }
 
 ssh_sudo() {
@@ -13,7 +13,7 @@ ssh_sudo() {
   cmdpath=$(ssh_sudo_cmd mktemp | sed 's/\r$//g') || return $?
   askpath=$(ssh_cmd mktemp | sed 's/\r$//g') || return $?
   ssh_sudo_cmd chmod u+x "$cmdpath" "$askpath" || return $?
-  ssh_cmd sudo -Ski --prompt= tee "$cmdpath" <<<"$SSH_SUDO_PASS
+  ssh_cmd sudo -Sk --prompt= tee "$cmdpath" <<<"$SSH_SUDO_PASS
 $*" >/dev/null || return $?
   ssh_cmd tee "$askpath" <<<"#!/usr/bin/env sh
 echo $SSH_SUDO_PASS" >/dev/null || return $?
