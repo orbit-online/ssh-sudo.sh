@@ -50,7 +50,11 @@ Remote SSH host _required_
 
 ### `$SSH_SUDO_PASS`
 
-Remote SSH sudo password for `$SSH_USER` _required_
+sudo password for `$SSH_USER` _required_
+
+### `$SSH_SUDO_USER`
+
+Remote user to sudo to, defaults to `root` _optional_
 
 ### `$SSH_OPTS`
 
