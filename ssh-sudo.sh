@@ -14,8 +14,8 @@ ssh_sudo() {
   ssh_sudo_cmd chmod u+x "$scriptpath" || return $?
   askpath=$(ssh_cmd mktemp | sed 's/\r$//g') || return $?
   ssh_cmd chmod u+x "$askpath" || return $?
-  ssh_cmd sudo -Sk --prompt= tee "$scriptpath" <<<"$SSH_SUDO_PASS
-$*" >/dev/null || return $?
+  SSH_SUDO_PASS="$SSH_SUDO_PASS
+$*" ssh_sudo_cmd tee "$scriptpath" >/dev/null || return $?
   ssh_cmd tee "$askpath" <<<"#!/usr/bin/env sh
 echo $SSH_SUDO_PASS" >/dev/null || return $?
   ssh_cmd SUDO_ASKPASS="$askpath" sudo -A "$scriptpath" || ret=$?
