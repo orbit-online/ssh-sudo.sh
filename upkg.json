@@ -1,3 +1,3 @@
 {
-  "assets": ["ssh-sudo.sh"]
+  "name": "ssh-sudo.sh"
 }

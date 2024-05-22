@@ -4,11 +4,7 @@ Bash library for executing remote sudo commands while preserving the tty.
 
 ## Installation
 
-With [μpkg](https://github.com/orbit-online/upkg)
-
-```
-upkg install -g orbit-online/ssh-sudo.sh@<VERSION>
-```
+See [the latest release](https://github.com/orbit-online/ssh-sudo.sh/releases/latest) for instructions.
 
 ## How it works
 
