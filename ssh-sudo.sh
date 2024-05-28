@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 ssh_cmd() {
-  ssh "${SSH_OPTS[@]}" "${SSH_USER:-$USER}@${SSH_HOST:?}" -- "$@"
+  # Quotes get lost in transmission to sudo over SSH
+  # Instead we escape all arguments and pass them on verbatim
+  # shellcheck disable=SC2046
+  ssh "${SSH_OPTS[@]}" "${SSH_USER:-$USER}@${SSH_HOST:?}" -- $(printf "%q " "$@")
 }
 
 ssh_sudo_cmd() {
