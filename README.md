@@ -9,14 +9,13 @@ See [the latest release](https://github.com/orbit-online/ssh-sudo.sh/releases/la
 ## How it works
 
 `ssh_sudo` works by creating 3 temporary files on the remote.
-The first 2 are owned and only readable by `$SSH_USER`:
+The first 2 are owned and only readable by `$SSH_USER`.
+The third is owned and only readable by `$SSH_SUDO_USER`.
+All 3 files are deleted after the commands have completed.
 
 - A fifo (named pipe) that outputs the sudo password
 - A sudo `askpass` script that reads from the fifo and outputs to stdout
-
-The third is owned and only readable by `$SSH_SUDO_USER`. It contains
-the commands that are passed to `ssh_sudo`.
-All 3 files are deleted after the commands have completed.
+- The commands or script that should be run by `$SSH_SUDO_USER`
 
 ## Security
 
@@ -24,8 +23,18 @@ The sudo password is only ever transmitted to the remote (and any child process)
 via stdin piping, meaning it will not be visible in the processlist as an
 argument at any point in time and is _never_ saved to disk.
 
-None of the [variables](#variables) need to be exported, meaning none of the
-childprocesses your script runs will be able to see the sudo password.
+When used from bash, none of the [variables](#variables) need to be exported,
+meaning none of the childprocesses your script runs will be able to see the
+sudo password.
+
+The executables `ssh-sudo` and `ssh-sudo-cmd` "un-export" the variables.
+
+A possible exploit is to read the password from the fifo socket that is written
+to right before `sudo` is executed. However, the socket is only readable by the
+current SSH user, meaning the attacker would have to have access to the login
+user account, in which case a slew of other exploits would be possible
+regardless (such as aliasing `sudo` or placing a wrapper script in
+`~/.local/bin`).
 
 ## Performance
 
@@ -52,14 +61,25 @@ In that case a connection on a separate `ControlPath` must be established.
 Run a command as root on the remote while preserving stdin, stdout,
 and stderr.
 
+### `ssh_sudo_cmd CMD...`
+
+Run a command as root on the remote but do not preserve stdin (quicker).
+
 ### `ssh_cmd CMD...`
 
 Run a command as `$SSH_USER` on the remote.
 
-### `ssh_sudo_cmd CMD...`
+## Commands
 
-Run a command as root on the remote but do not preserve stdin
-(quicker).
+### `ssh-sudo [CMD...|SCRIPT]`
+
+A wrapper script for [`ssh_sudo`](#ssh_sudo-cmdscript). Expects the necessary
+variables to be exported.
+
+### `ssh-sudo-cmd CMD...`
+
+A wrapper script for [`ssh_sudo_cmd`](#ssh_sudo_cmd-cmd). Expects the necessary
+variables to be exported.
 
 ## Variables
 
@@ -68,7 +88,7 @@ as global variables and then use the above functions.
 
 ### `$SSH_USER`
 
-Remote SSH user (_required_)
+Remote SSH user, defaults to `$USER` (_optional_)
 
 ### `$SSH_HOST`
 

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# shellcheck source-path=..
+
+main() {
+  set -eo pipefail; shopt -s inherit_errexit
+  local pkgroot; pkgroot=$(realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/..")
+  source "$pkgroot/ssh-sudo.sh"
+  export -n SSH_OPTS SSH_USER SSH_HOST SSH_SUDO_USER SSH_SUDO_PASS
+  ssh_sudo_cmd "$@"
+}
+
+main "$@"
