@@ -17,4 +17,4 @@ jobs:
     steps:
     - uses: orbit-online/upkg-release@v1
       with:
-        paths: ssh-sudo.sh LICENSE README.md
+        paths: ssh-sudo.sh bin LICENSE README.md
