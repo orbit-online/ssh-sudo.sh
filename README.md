@@ -111,7 +111,7 @@ An array of options to pass to all ssh invocations (_optional_)
 ### `$_SSH_OPTS`
 
 Command version of `$SSH_OPTS` (_optional_). Bash arrays cannot be exported as
-environment variables, instead `$_SSH_OPTS` must be string with each parameter
-separated by a record separator char (`RS` or `\x1e` in hex). In bash you can
-it would look like this:
+environment variables, instead `$_SSH_OPTS` must be a string where each
+parameter is separated by the record separator char (`RS` or `\x1e` in hex).
+In bash it would look like this:
 `export _SSH_OPTS=$'-o\x1eForwardAgent=yes\x1e-t\x1e-q'`.
