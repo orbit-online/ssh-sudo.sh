@@ -8,7 +8,7 @@ ssh_cmd() {
 }
 
 ssh_sudo_cmd() {
-  ssh_cmd sudo -Sku "${SSH_SUDO_USER:-root}" -p \"\" "$@" <<<"${SSH_SUDO_PASS:?}"
+  ssh_cmd sudo -Sku "${SSH_SUDO_USER:-root}" -p "" "$@" <<<"${SSH_SUDO_PASS:?}"
 }
 
 ssh_sudo() {
