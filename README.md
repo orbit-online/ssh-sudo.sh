@@ -74,12 +74,14 @@ Run a command as `$SSH_USER` on the remote.
 ### `ssh-sudo [CMD...|SCRIPT]`
 
 A wrapper script for [`ssh_sudo`](#ssh_sudo-cmdscript). Expects the necessary
-variables to be exported.
+variables to be exported. See [`$_SSH_OPTS`](#_ssh_opts) for how to pass SSH
+options.
 
 ### `ssh-sudo-cmd CMD...`
 
 A wrapper script for [`ssh_sudo_cmd`](#ssh_sudo_cmd-cmd). Expects the necessary
-variables to be exported.
+variables to be exported. See [`$_SSH_OPTS`](#_ssh_opts) for how to pass SSH
+options.
 
 ## Variables
 
@@ -105,3 +107,11 @@ Remote user to sudo to, defaults to `root` (_optional_)
 ### `$SSH_OPTS`
 
 An array of options to pass to all ssh invocations (_optional_)
+
+### `$_SSH_OPTS`
+
+Command version of `$SSH_OPTS` (_optional_). Bash arrays cannot be exported as
+environment variables, instead `$_SSH_OPTS` must be string with each parameter
+separated by a record separator char (`RS` or `\x1e` in hex). In bash you can
+it would look like this:
+`export _SSH_OPTS=$'-o\x1eForwardAgent=yes\x1e-t\x1e-q'`.

@@ -5,7 +5,9 @@ main() {
   set -eo pipefail; shopt -s inherit_errexit
   local pkgroot; pkgroot=$(realpath "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/..")
   source "$pkgroot/ssh-sudo.sh"
-  export -n SSH_OPTS SSH_USER SSH_HOST SSH_SUDO_USER SSH_SUDO_PASS
+  export -n _SSH_OPTS SSH_OPTS SSH_USER SSH_HOST SSH_SUDO_USER SSH_SUDO_PASS
+  SSH_OPTS=()
+  readarray -d $'\x1e' -t SSH_OPTS < <(printf "%s" "$_SSH_OPTS")
   ssh_sudo "$@"
 }
 
