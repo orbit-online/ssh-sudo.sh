@@ -27,8 +27,10 @@ cat \"$fifopath\"" >/dev/null || return $?
     ssh_cmd tee -a "$fifopath" >/dev/null <<<"${SSH_SUDO_PASS:?}" & fifopid=$!
   } <<<''
   ssh_cmd SUDO_ASKPASS="$askpath" sudo -Aku "${SSH_SUDO_USER:-root}" "$scriptpath" || ret=$?
-  ssh_cmd rm -f "$askpath" "$fifopath" || true
-  ssh_sudo_cmd rm -f "$scriptpath" || true
+  {
+    ssh_cmd rm -f "$askpath" "$fifopath" || true
+    ssh_sudo_cmd rm -f "$scriptpath" || true
+  } <<<''
   kill -TERM $fifopid >/dev/null 2>&1 || true
   return $ret
 }
