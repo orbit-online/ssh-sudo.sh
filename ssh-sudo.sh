@@ -23,13 +23,17 @@ ssh_sudo() {
     SSH_SUDO_PASS="$SSH_SUDO_PASS
 $*" ssh_sudo_cmd tee "$scriptpath" >/dev/null || return $?
     ssh_cmd tee "$askpath" <<<"#!/usr/bin/env sh
-cat \"$fifopath\"" >/dev/null || return $?
+cat \"$fifopath\"
+rm -f \"$fifopath\" \"$askpath\"" >/dev/null || return $?
     ssh_cmd tee -a "$fifopath" >/dev/null <<<"${SSH_SUDO_PASS:?}" & fifopid=$!
   } <<<''
   ssh_cmd SUDO_ASKPASS="$askpath" sudo -Aku "${SSH_SUDO_USER:-root}" "$scriptpath" || ret=$?
   {
-    ssh_cmd rm -f "$askpath" "$fifopath" || true
     ssh_sudo_cmd rm -f "$scriptpath" || true
+    # The fifo tee process should be terminated by now. If so that means
+    # the askpass script was called and $fifopath and $askpath were removed.
+    # If not, something went wrong and we need to clean up remotely.
+    ! kill -0 $fifopid &>/dev/null || ssh_cmd rm -f "$askpath" "$fifopath" || true
   } <<<''
   kill -TERM $fifopid >/dev/null 2>&1 || true
   return $ret
