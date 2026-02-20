@@ -59,7 +59,11 @@ In that case a connection on a separate `ControlPath` must be established.
 ### `ssh_sudo [CMD...|SCRIPT]`
 
 Run a command as root on the remote while preserving stdin, stdout,
-and stderr.
+and stderr.  
+If `-` is given as the first and only argument stdin will be executed instead.
+This is necessary when running commands that bash would otherwise evaluate on
+the local machine (e.g. `printf "%s\n" "/dev/*"` would either output `/dev/*`
+or all the devpaths on your local machine if you omit the quotes).
 
 ### `ssh_sudo_cmd CMD...`
 

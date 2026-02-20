@@ -12,7 +12,9 @@ ssh_sudo_cmd() {
 }
 
 ssh_sudo() {
-  local askpath scriptpath fifopath fifopid ret=0
+  local askpath scriptpath script fifopath fifopid ret=0
+  if [[ $# -eq 1 && $1 = - ]]; then script=$(cat)
+  else script=$*; fi
   {
     askpath=$(ssh_cmd mktemp | sed 's/\r$//g') || return $?
     ssh_cmd chmod u+x "$askpath" || return $?
@@ -21,7 +23,7 @@ ssh_sudo() {
     scriptpath=$(ssh_sudo_cmd mktemp | sed 's/\r$//g') || return $?
     ssh_sudo_cmd chmod u+x "$scriptpath" || return $?
     SSH_SUDO_PASS="${SSH_SUDO_PASS:?}
-$*" ssh_sudo_cmd tee "$scriptpath" >/dev/null || return $?
+$script" ssh_sudo_cmd tee "$scriptpath" >/dev/null || return $?
     ssh_cmd tee "$askpath" <<<"#!/usr/bin/env sh
 cat \"$fifopath\"
 rm -f \"$fifopath\" \"$askpath\"" >/dev/null || return $?
