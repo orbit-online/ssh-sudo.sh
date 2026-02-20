@@ -20,12 +20,12 @@ ssh_sudo() {
     ssh_cmd mkfifo -m 600 "$fifopath" || return $?
     scriptpath=$(ssh_sudo_cmd mktemp | sed 's/\r$//g') || return $?
     ssh_sudo_cmd chmod u+x "$scriptpath" || return $?
-    SSH_SUDO_PASS="$SSH_SUDO_PASS
+    SSH_SUDO_PASS="${SSH_SUDO_PASS:?}
 $*" ssh_sudo_cmd tee "$scriptpath" >/dev/null || return $?
     ssh_cmd tee "$askpath" <<<"#!/usr/bin/env sh
 cat \"$fifopath\"
 rm -f \"$fifopath\" \"$askpath\"" >/dev/null || return $?
-    ssh_cmd tee -a "$fifopath" >/dev/null <<<"${SSH_SUDO_PASS:?}" & fifopid=$!
+    ssh_cmd tee -a "$fifopath" >/dev/null <<<"$SSH_SUDO_PASS" & fifopid=$!
   } <<<''
   ssh_cmd SUDO_ASKPASS="$askpath" sudo -Aku "${SSH_SUDO_USER:-root}" "$scriptpath" || ret=$?
   {
